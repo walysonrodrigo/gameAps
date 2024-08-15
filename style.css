@@ -1,0 +1,28 @@
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+canvas {
+    background-color: #6ab150;
+    border: 3px solid #000;
+    margin-bottom: 20px;
+}
+
+#controls {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+#intensityCanvas, #directionCanvas {
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
