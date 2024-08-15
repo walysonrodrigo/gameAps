@@ -272,6 +272,26 @@ function updateScore(newScore) {
     animate();
 }
 
+// Função para atualizar o placar com animação
+function updateScore(newScore) {
+    // Atualizar o valor do placar com uma animação de aumento
+    const scoreElement = document.getElementById('score');
+    let currentScore = parseInt(scoreElement.innerText);
+    let increment = (newScore - currentScore) / 10; // Dividir a diferença em 10 etapas
+
+    function animate() {
+        if (Math.abs(newScore - currentScore) <= Math.abs(increment)) {
+            scoreElement.innerText = newScore;
+        } else {
+            currentScore += increment;
+            scoreElement.innerText = Math.round(currentScore);
+            requestAnimationFrame(animate);
+        }
+    }
+
+    animate();
+}
+
 // Salvar o placar usando PHP (AJAX)
 function saveScore(score) {
     fetch('save_score.php', {
@@ -459,11 +479,11 @@ function init() {
 }
 
 // Configurar evento de clique para o botão Iniciar
-document.getElementById('startButton').addEventListener('click', function () {
-    document.getElementById('menu').style.display = 'none';
-    document.getElementById('gameScreen').style.display = 'flex';
-    init(); // Inicializa o jogo
-});
+// document.getElementById('startButton').addEventListener('click', function () {
+//     document.getElementById('menu').style.display = 'none';
+//     document.getElementById('gameScreen').style.display = 'flex';
+//     init(); // Inicializa o jogo
+// });
 
 
 // Configurar evento de clique para o chute

@@ -5,16 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo de Pênaltis</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/country.css">
+    <link rel="stylesheet" href="css/fan.css">
+    <link rel="stylesheet" href="css/match.css">
 </head>
 <body>
     <div id="menu" class="container">
-        <h1>Bem-vindo ao Jogo de Pênaltis</h1>
-        <button id="startButton">Começar o Jogo</button>
+        <img src="cklogo2.png" style="width: 400px;">
+        <p>Escolha o país que deseja representar</p>
+        <div class="country-selection">
+            <!-- Bandeiras dos países para seleção -->
+        </div>
     </div>
 
     <div id="gameScreen" class="container">
-        <div id="score">0</div>
+        <div id="matches" class="container">
+            <div id="matches-list"></div>
+        </div>
         <div id="gameArea">
+            <div id="torcida"></div>
             <canvas id="gameCanvas" width="800" height="400"></canvas>
             <canvas id="intensityCanvas" width="300" height="50"></canvas>
             <canvas id="directionCanvas" width="500" height="50"></canvas>
@@ -22,6 +31,7 @@
         </div>
     </div>
 
+    <script src="js/menu.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

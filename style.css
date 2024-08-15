@@ -8,16 +8,30 @@ body {
     align-items: center;
     height: 100vh;
     color: #333;
+    background-color: #003366; /* Azul escuro */
+    background-image: url('background.png');
+    background-size: cover; /* Faz a imagem cobrir todo o fundo */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Evita que a imagem se repita */
 }
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: rgba(255, 255, 255, .1);
 }
 
 #menu {
-    text-align: center;
+    padding: 15px 30px;
+    font-size: 24px;
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, .1);
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 #startButton {
@@ -26,7 +40,6 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 12px;
-    background-color: #28a745; /* Verde mais suave */
     color: white;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, box-shadow 0.3s;
@@ -42,20 +55,17 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background: white;
     border-radius: 15px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 #score {
-    font-size: 48px;
+    font-size: 50px;
     font-weight: bold;
     color: #ff5722; /* Laranja vibrante */
     background: #ffffff; /* Fundo branco para destaque */
-    padding: 20px 40px;
     border-radius: 12px;
-    border: 2px solid #ff5722;
-    margin-bottom: 20px;
+    padding: 0px 10px 0px 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
