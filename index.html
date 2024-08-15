@@ -1,93 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo de Pênaltis</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        #gameCanvas {
-            border: 2px solid #000;
-            background-color: #4CAF50;
-        }
-
-        #intensityCanvas,
-        #directionCanvas {
-            border: 1px solid #000;
-            margin: 10px;
-            background-color: #ffffff;
-        }
-
-        #score {
-            font-size: 24px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        #shootButton {
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        #shootButton:hover {
-            background-color: #45a049;
-        }
-
-        #menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #startButton {
-            padding: 15px 30px;
-            font-size: 24px;
-            cursor: pointer;
-            border: none;
-            border-radius: 10px;
-            background-color: #4CAF50;
-            color: white;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        #startButton:hover {
-            background-color: #45a049;
-        }
-
-        #gameScreen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #info {
-            margin-bottom: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div id="menu" class="container">
         <h1>Bem-vindo ao Jogo de Pênaltis</h1>
@@ -95,22 +13,15 @@
     </div>
 
     <div id="gameScreen" class="container">
-        <div id="info">Clique em "Chutar" para começar o jogo!</div>
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <canvas id="intensityCanvas" width="300" height="50"></canvas>
-        <canvas id="directionCanvas" width="500" height="50"></canvas>
         <div id="score">0</div>
-        <button id="shootButton">Chutar</button>
+        <div id="gameArea">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+            <canvas id="intensityCanvas" width="300" height="50"></canvas>
+            <canvas id="directionCanvas" width="500" height="50"></canvas>
+            <button id="shootButton">Chutar</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
-    <script>
-        document.getElementById('startButton').addEventListener('click', function() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'flex';
-            init(); // Inicializa o jogo
-        });
-    </script>
 </body>
-
 </html>
