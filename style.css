@@ -1,28 +1,113 @@
 body {
-    text-align: center;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+    background-color: #003366; /* Azul escuro */
+    background-image: url('background.png');
+    background-size: cover; /* Faz a imagem cobrir todo o fundo */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Evita que a imagem se repita */
 }
 
-canvas {
-    background-color: #6ab150;
-    border: 3px solid #000;
-    margin-bottom: 20px;
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, .1);
 }
 
-#controls {
-    display: inline-block;
-    margin-top: 20px;
-}
-
-#intensityCanvas, #directionCanvas {
+#menu {
+    padding: 15px 30px;
+    font-size: 24px;
     cursor: pointer;
-    margin-bottom: 20px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, .1);
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-button {
-    padding: 10px 20px;
-    margin-top: 10px;
+#startButton {
+    padding: 15px 30px;
+    font-size: 24px;
     cursor: pointer;
-    font-size: 16px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#startButton:hover {
+    background-color: #218838; /* Verde escuro ao passar o mouse */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+#gameScreen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#score {
+    font-size: 50px;
+    font-weight: bold;
+    color: #ff5722; /* Laranja vibrante */
+    background: #ffffff; /* Fundo branco para destaque */
+    border-radius: 12px;
+    padding: 0px 10px 0px 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#gameArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    gap: 20px;
+}
+
+#gameCanvas {
+    border: 5px solid #2c6b2f;
+    background-color: #4caf50;
+    border-radius: 15px;
+}
+
+#intensityCanvas {
+    border: 2px solid #ff5722;
+    background: linear-gradient(to right, #ff5722, #ffab91);
+    border-radius: 12px;
+}
+
+#directionCanvas {
+    border: 2px solid #2196f3;
+    background: linear-gradient(to right, #2196f3, #64b5f6);
+    border-radius: 12px;
+}
+
+#shootButton {
+    padding: 15px 30px;
+    font-size: 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    background-color: #ff5722;
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#shootButton:hover {
+    background-color: #e64a19;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }

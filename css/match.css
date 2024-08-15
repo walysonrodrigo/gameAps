@@ -1,0 +1,47 @@
+#matches {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#matches h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333; /* Cor do título */
+}
+
+.match {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin: 10px 0;
+    background-color: #fff; /* Cor de fundo do match */
+    border: 2px solid #ddd; /* Borda leve */
+    border-radius: 8px; /* Bordas arredondadas */
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra leve */
+    max-width: 500px; /* Largura máxima para centralização */
+    margin: 10px auto; /* Centraliza horizontalmente */
+}
+
+.match .team {
+    margin: 0 15px;
+}
+
+.match .team img {
+    width: 50px;
+    height: auto;
+    border: 2px solid #000; /* Borda ao redor das bandeiras */
+    border-radius: 5px; /* Bordas arredondadas nas bandeiras */
+    transition: transform 0.3s; /* Transição suave ao passar o mouse */
+}
+
+.match .team img:hover {
+    transform: scale(1.1); /* Aumenta a imagem ao passar o mouse */
+}
+
+.match .vs {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333; /* Cor do "vs" */
+}

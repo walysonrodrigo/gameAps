@@ -1,0 +1,23 @@
+#torcida {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #dcdcdc; /* Cor de fundo da torcida */
+    position: relative;
+}
+
+.seat {
+    width: 20px;
+    height: 30px;
+    background-color: var(--seat-color, #b0b0b0);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.seat:nth-child(odd) {
+    background-color: var(--secondary-seat-color, #ff0000);
+}
+
+.seat:nth-child(even) {
+    background-color: var(--tertiary-seat-color, #0000ff);
+}

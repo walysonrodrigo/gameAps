@@ -115,11 +115,11 @@ function checkGoal() {
     };
 
     const isGoalkeeperCovering = ballX + ballRadius > goalkeeperX && ballX - ballRadius < goalkeeperX + goalkeeperWidth &&
-                                 ballY + ballRadius > goalkeeperY && ballY - ballRadius < goalkeeperY + goalkeeperHeight;
+                                ballY + ballRadius > goalkeeperY && ballY - ballRadius < goalkeeperY + goalkeeperHeight;
 
     // Verificar se a bola tocou a trave
     const isBallInsideGoal = ballX + ballRadius >= goalArea.x && ballX - ballRadius <= goalArea.x + goalArea.width &&
-                             ballY + ballRadius >= goalArea.y && ballY - ballRadius <= goalArea.y + goalArea.height;
+                            ballY + ballRadius >= goalArea.y && ballY - ballRadius <= goalArea.y + goalArea.height;
 
     const isBallTouchingCrossbar = isBallInsideGoal && ballY - ballRadius <= goalY + 15 && ballX + ballRadius >= goalX && ballX - ballRadius <= goalX + goalWidth;
     const isBallTouchingSideBarLeft = isBallInsideGoal && ballX - ballRadius <= goalX + 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
@@ -131,15 +131,40 @@ function checkGoal() {
         alert("A bola tocou na trave!");
     } else if (isBallInsideGoal) {
         playerScore++;
-        document.getElementById('score').innerText = playerScore;
-        alert("Gol!");
-        saveScore(playerScore);
+        updateScore(playerScore); // Atualizar o placar com animação
+
+        // disparar gif de comemoração no html
+        document.getElementById("celebration").style.display = "block";
+
+        setTimeout(function() {
+            document.getElementById("celebration").style.display = "none";
+        }, 5000);
     } else {
         alert("A bola saiu!");
     }
 
     // Reiniciar o jogo após o chute
     restartGame(); // Reiniciar imediatamente após o chute
+}
+
+// Função para atualizar o placar com animação
+function updateScore(newScore) {
+    // Atualizar o valor do placar com uma animação de aumento
+    const scoreElement = document.getElementById('score');
+    let currentScore = parseInt(scoreElement.innerText);
+    let increment = (newScore - currentScore) / 10; // Dividir a diferença em 10 etapas
+
+    function animate() {
+        if (Math.abs(newScore - currentScore) <= Math.abs(increment)) {
+            scoreElement.innerText = newScore;
+        } else {
+            currentScore += increment;
+            scoreElement.innerText = Math.round(currentScore);
+            requestAnimationFrame(animate);
+        }
+    }
+
+    animate();
 }
 
 // Salvar o placar usando PHP (AJAX)
@@ -287,8 +312,18 @@ function init() {
     animateDirection();
 }
 
+// Configurar evento de clique para o botão Iniciar
+// document.getElementById('startButton').addEventListener('click', function() {
+//     document.getElementById('menu').style.display = 'none';
+//     document.getElementById('gameScreen').style.display = 'flex';
+//     init(); // Inicializa o jogo
+// });
+
+
 // Configurar evento de clique para o chute
 document.getElementById('shootButton').addEventListener('click', shoot);
 
 // Inicializar o jogo
 init();
+
+
