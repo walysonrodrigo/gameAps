@@ -70,12 +70,12 @@ function animateGoalkeeper() {
     const interval = setInterval(() => {
         // Movimento no eixo X
         if (goalkeeperDirectionX === 'right') {
-            goalkeeperX += 5;
+            goalkeeperX += 10;
             if (goalkeeperX >= goalX + goalWidth - goalkeeperWidth) { // Limite à direita do gol
                 goalkeeperDirectionX = 'left';
             }
         } else {
-            goalkeeperX -= 5;
+            goalkeeperX -= 10;
             if (goalkeeperX <= goalX) { // Limite à esquerda do gol
                 goalkeeperDirectionX = 'right';
             }
@@ -83,12 +83,12 @@ function animateGoalkeeper() {
 
         // Movimento no eixo Y
         if (goalkeeperDirectionY === 'down') {
-            goalkeeperY += 5;
+            goalkeeperY += 10;
             if (goalkeeperY >= goalY + goalHeight - goalkeeperHeight) { // Limite inferior do gol
                 goalkeeperDirectionY = 'up';
             }
         } else {
-            goalkeeperY -= 5;
+            goalkeeperY -= 10;
             if (goalkeeperY <= goalY) { // Limite superior do gol
                 goalkeeperDirectionY = 'down';
             }
@@ -337,12 +337,12 @@ function animateDirection() {
 
     // Controle automático da direção
     if (directionMovingRight) {
-        shotDirection += 2; // Ajustar a velocidade para balancear a sensibilidade
+        shotDirection += 5; // Ajustar a velocidade para balancear a sensibilidade
         if (shotDirection >= directionCanvas.width - 5) { // Limite direito
             directionMovingRight = false;
         }
     } else {
-        shotDirection -= 2; // Ajustar a velocidade para balancear a sensibilidade
+        shotDirection -= 5; // Ajustar a velocidade para balancear a sensibilidade
         if (shotDirection <= 5) { // Limite esquerdo
             directionMovingRight = true;
         }

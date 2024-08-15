@@ -96,7 +96,9 @@ body {
 }
 
 #shootButton {
-    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 20px;
     cursor: pointer;
     border: none;
@@ -105,9 +107,20 @@ body {
     color: white;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, box-shadow 0.3s;
+    padding: 10px 20px; /* Adiciona espaçamento interno para melhor aparência */
 }
 
 #shootButton:hover {
     background-color: #e64a19;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+#shootButton img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px; /* Espaço entre a imagem e o texto */
+}
+
+#shootText {
+    font-weight: bold;
 }

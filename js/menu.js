@@ -1,12 +1,12 @@
 const countries = [
-    { name: 'Brasil', flag: 'flags/brasil.png', primaryColor: '#009739', secondaryColor: '#FFD700' },
-    { name: 'Alemanha', flag: 'flags/alemanha.png', primaryColor: '#000', secondaryColor: '#AA0000' },
-    { name: 'Itália', flag: 'flags/italia.png', primaryColor: '#009246', secondaryColor: '#FFFFFF' },
-    { name: 'Argentina', flag: 'flags/argentina.png', primaryColor: '#0072CE', secondaryColor: '#FFFFFF' },
-    { name: 'França', flag: 'flags/franca.png', primaryColor: '#0055A4', secondaryColor: '#AA0000' },
-    { name: 'Uruguai', flag: 'flags/uruguai.png', primaryColor: '#0033A0', secondaryColor: '#FFFFFF' },
-    { name: 'Espanha', flag: 'flags/espanha.png', primaryColor: '#AA0000', secondaryColor: '#FFD700' },
-    { name: 'Inglaterra', flag: 'flags/inglaterra.png', primaryColor: '#AA0000', secondaryColor: '#FFFFFF' }
+    { name: 'Brasil', flag: 'flags/brasil.png', primaryColor: '#009739', secondaryColor: '#FFD700', tertiaryColor: '#002776' }, // Verde, Amarelo, Azul
+    { name: 'Alemanha', flag: 'flags/alemanha.png', primaryColor: '#000000', secondaryColor: '#FF0000', tertiaryColor: '#FFCC00' }, // Preto, Vermelho, Amarelo
+    { name: 'Itália', flag: 'flags/italia.png', primaryColor: '#009246', secondaryColor: '#FFFFFF', tertiaryColor: '#CE2B37' }, // Verde, Branco, Vermelho
+    { name: 'Argentina', flag: 'flags/argentina.png', primaryColor: '#FFFFFF', secondaryColor: '#74ACDF', tertiaryColor: '#FFFFFF' }, // Azul Claro, Branco, Azul Claro
+    { name: 'França', flag: 'flags/franca.png', primaryColor: '#0055A4', secondaryColor: '#FFFFFF', tertiaryColor: '#EF4135' }, // Azul Escuro, Branco, Vermelho
+    { name: 'Uruguai', flag: 'flags/uruguai.png', primaryColor: '#FFFFFF', secondaryColor: '#74ACDF', tertiaryColor: '#FFFFFF' }, // Azul Claro, Branco, Azul Claro
+    { name: 'Espanha', flag: 'flags/espanha.png', primaryColor: '#AA0000', secondaryColor: '#FFD700', tertiaryColor: '#AA0000' }, // Vermelho, Amarelo, Vermelho
+    { name: 'Inglaterra', flag: 'flags/inglaterra.png', primaryColor: '#FFFFFF', secondaryColor: '#FF0000', tertiaryColor: '#FFFFFF' } // Branco, Vermelho, Branco
 ];
 
 function loadCountryOptions() {
@@ -24,7 +24,7 @@ function startGame(countryName) {
     if (country) {
         document.getElementById('menu').style.display = 'none';
         document.getElementById('gameScreen').style.display = 'flex';
-        setTorcidaColors(country.primaryColor, country.secondaryColor, '#b0b0b0'); // Cor terciária fixa como cinza
+        setTorcidaColors(country.primaryColor, country.secondaryColor, country.tertiaryColor); // Cor terciária fixa como cinza
         init(); // Inicializa o jogo
 
         generateMatches(countryName); // Gera e exibe os confrontos com o país selecionado
@@ -33,8 +33,9 @@ function startGame(countryName) {
 
 function setTorcidaColors(primaryColor, secondaryColor, tertiaryColor) {
     document.documentElement.style.setProperty('--seat-color', tertiaryColor);
-    document.documentElement.style.setProperty('--secondary-seat-color', primaryColor);
-    document.documentElement.style.setProperty('--tertiary-seat-color', secondaryColor);
+    document.documentElement.style.setProperty('--primary-color', primaryColor);
+    document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+    document.documentElement.style.setProperty('--tertiary-color', tertiaryColor);
 }
 
 function loadFans() {

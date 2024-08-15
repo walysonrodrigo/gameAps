@@ -14,10 +14,14 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.seat:nth-child(odd) {
-    background-color: var(--secondary-seat-color, #ff0000);
+.seat:nth-child(3n+1) {
+    background-color: var(--primary-color, #ff0000); /* Cor 1 */
 }
 
-.seat:nth-child(even) {
-    background-color: var(--tertiary-seat-color, #0000ff);
+.seat:nth-child(3n+2) {
+    background-color: var(--secondary-color, #00ff00); /* Cor 2 */
+}
+
+.seat:nth-child(3n+3) {
+    background-color: var(--tertiary-color, #0000ff); /* Cor 3 */
 }
