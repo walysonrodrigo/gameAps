@@ -34,6 +34,10 @@ const ballRadius = 10;
 const goalkeeperWidth = 120; 
 const goalkeeperHeight = 30;
 
+// Indica se o goleiro está tentando defender
+let goalieDefending = false; 
+
+
 // Espaço adicional fora do gol
 const additionalSpace = 50;
 
@@ -73,29 +77,31 @@ function drawGoalkeeper() {
 function animateGoalkeeper() {
     goalkeeperMoving = true;
     const interval = setInterval(() => {
-        // Movimento no eixo X
-        if (goalkeeperDirectionX === 'right') {
-            goalkeeperX += 10;
-            if (goalkeeperX >= goalX + goalWidth - goalkeeperWidth) { // Limite à direita do gol
-                goalkeeperDirectionX = 'left';
+        if (!goalieDefending) { // Apenas move o goleiro se ele não estiver defendendo
+            // Movimento no eixo X
+            if (goalkeeperDirectionX === 'right') {
+                goalkeeperX += 5; // Velocidade reduzida para um movimento mais suave
+                if (goalkeeperX >= goalX + goalWidth - goalkeeperWidth) { // Limite à direita do gol
+                    goalkeeperDirectionX = 'left';
+                }
+            } else {
+                goalkeeperX -= 5; // Velocidade reduzida para um movimento mais suave
+                if (goalkeeperX <= goalX) { // Limite à esquerda do gol
+                    goalkeeperDirectionX = 'right';
+                }
             }
-        } else {
-            goalkeeperX -= 10;
-            if (goalkeeperX <= goalX) { // Limite à esquerda do gol
-                goalkeeperDirectionX = 'right';
-            }
-        }
 
-        // Movimento no eixo Y
-        if (goalkeeperDirectionY === 'down') {
-            goalkeeperY += 10;
-            if (goalkeeperY >= goalY + goalHeight - goalkeeperHeight) { // Limite inferior do gol
-                goalkeeperDirectionY = 'up';
-            }
-        } else {
-            goalkeeperY -= 10;
-            if (goalkeeperY <= goalY) { // Limite superior do gol
-                goalkeeperDirectionY = 'down';
+            // Movimento no eixo Y
+            if (goalkeeperDirectionY === 'down') {
+                goalkeeperY += 3; // Velocidade menor no eixo Y para realismo
+                if (goalkeeperY >= goalY + goalHeight - goalkeeperHeight) { // Limite inferior do gol
+                    goalkeeperDirectionY = 'up';
+                }
+            } else {
+                goalkeeperY -= 3; // Velocidade menor no eixo Y para realismo
+                if (goalkeeperY <= goalY) { // Limite superior do gol
+                    goalkeeperDirectionY = 'down';
+                }
             }
         }
 
@@ -106,7 +112,7 @@ function animateGoalkeeper() {
         if (!goalkeeperMoving) {
             clearInterval(interval);
         }
-    }, 50); // Velocidade do movimento do goleiro
+    }, 100); // Intervalo ajustado para suavizar o movimento
 }
 
 
@@ -199,8 +205,6 @@ function animateRicochet(startX, startY, hitOnGoalPost) {
         // Continuar a animação até atingir a posição final
         if (progress < 1) {
             requestAnimationFrame(ricochetStep);
-        } else {
-            restartGame(); // Reiniciar o jogo após o ricocheteio
         }
     }
 
@@ -345,13 +349,18 @@ function animateDirection() {
 // Animação da bola até o gol
 function animateBall(targetX, targetY) {
     shooting = true;
-    const interval = setInterval(() => {
-        // Movimento gradual da bola com fator aleatório
-        const randomnessX = (Math.random() - 0.5) * 5; // Aleatoriedade no eixo X
-        const randomnessY = (Math.random() - 0.5) * 5; // Aleatoriedade no eixo Y
+    goalkeeperMoving = false; // Pausa o movimento do goleiro durante o chute
 
-        const dx = (targetX - ballX) * 0.1 + randomnessX;
-        const dy = (targetY - ballY) * 0.1 + randomnessY;
+    // Decidir posição defensiva do goleiro
+    goalieDefending = true;
+    const randomMoveX = Math.random() * 50 - 25; // Movimento aleatório pequeno no eixo X
+    const randomMoveY = Math.random() * 20 - 10; // Movimento aleatório pequeno no eixo Y
+    goalkeeperX += randomMoveX;
+    goalkeeperY += randomMoveY;
+
+    const interval = setInterval(() => {
+        const dx = (targetX - ballX) * 0.1;
+        const dy = (targetY - ballY) * 0.1;
 
         ballX += dx;
         ballY += dy;
@@ -363,10 +372,13 @@ function animateBall(targetX, targetY) {
         if (Math.abs(ballX - targetX) <= 5 && Math.abs(ballY - targetY) <= 5) {
             clearInterval(interval);
             shooting = false;
-            checkGoal(); // Verifica se a bola entrou ou foi defendida
+            checkGoal();
+            goalkeeperMoving = true; // Retoma o movimento do goleiro após o chute
+            goalieDefending = false; // Reseta o estado de defesa
         }
     }, 50);
 }
+
 
 // Reiniciar o jogo
 function restartGame() {
@@ -427,47 +439,6 @@ function shoot() {
     animateGoalkeeper();
 }
 
-// Animação de ricocheteio da bola
-// Animação de ricocheteio da bola
-function animateRicochet(startX, startY, hitOnGoalPost) {
-    const ricochetDuration = 800; // Duração total da animação em milissegundos
-    const numSteps = 30; // Número de passos para a animação
-    const intervalTime = ricochetDuration / numSteps; // Intervalo entre atualizações
-
-    // Define a posição final da bola após o ricocheteio
-    const ricochetDistance = hitOnGoalPost ? 30 : 0; // Distância do ricocheteio
-    const targetX = startX - ricochetDistance; // Ajuste a direção de retorno
-    const targetY = startY - ricochetDistance; // Ajuste a altura de retorno
-
-    let startTime = null;
-
-    function ricochetStep(timestamp) {
-        if (!startTime) startTime = timestamp;
-        const progress = Math.min((timestamp - startTime) / ricochetDuration, 1); // Progresso da animação
-
-        // Interpolação linear para a posição da bola
-        const newX = startX + (targetX - startX) * progress;
-        const newY = startY + (targetY - startY) * progress;
-
-        // Atualizar a tela
-        drawField();
-        drawGoalkeeper();
-        drawBall(newX, newY);
-
-        // Continuar a animação até atingir a posição final
-        if (progress < 1) {
-            requestAnimationFrame(ricochetStep);
-        } else {
-            restartGame(); // Reiniciar o jogo após o ricocheteio
-        }
-    }
-
-    // Iniciar a animação
-    requestAnimationFrame(ricochetStep);
-}
-
-
-
 // Inicializar o jogo
 function init() {
     drawField();
@@ -491,5 +462,3 @@ document.getElementById('shootButton').addEventListener('click', shoot);
 
 // Inicializar o jogo
 init();
-
-
