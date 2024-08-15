@@ -85,17 +85,20 @@ body {
 
 #intensityCanvas {
     border: 2px solid #ff5722;
+    height: 25px;
     background: linear-gradient(to right, #ff5722, #ffab91);
     border-radius: 12px;
 }
 
 #directionCanvas {
     border: 2px solid #2196f3;
+    height: 25px;
     background: linear-gradient(to right, #2196f3, #64b5f6);
     border-radius: 12px;
 }
 
 #shootButton {
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
