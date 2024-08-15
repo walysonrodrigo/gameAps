@@ -1,328 +1,294 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const intensityCanvas = document.getElementById('intensityCanvas');
+const intensityCtx = intensityCanvas.getContext('2d');
+const directionCanvas = document.getElementById('directionCanvas');
+const directionCtx = directionCanvas.getContext('2d');
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Pênaltis</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
+let playerScore = 0;
+let goalkeeperX = 360; // Posição inicial do goleiro no eixo X
+let goalkeeperY = 60;  // Posição inicial do goleiro no eixo Y
+let goalkeeperMoving = false;
+let shotIntensity = 5;
+let shotDirection = 250; // Centralizado no canvas de direção
+let intensityIncreasing = true;
+let directionMovingRight = true;
+let goalkeeperDirectionX = 'right'; // Direção inicial do goleiro no eixo X
+let goalkeeperDirectionY = 'down'; // Direção inicial do goleiro no eixo Y
+let intensityAnimationId;
+let directionAnimationId;
+let ballX = 400; // Posição inicial da bola
+let ballY = 300; // Posição inicial da bola
+let shooting = false; // Estado para controle do chute
 
-        #gameCanvas {
-            border: 2px solid #000;
-            background-color: #4CAF50;
-        }
+// Tamanho do gol
+const goalWidth = 300;
+const goalHeight = 130;
+const goalX = (canvas.width - goalWidth) / 2; // Centralizar horizontalmente
+const goalY = 50; // Posição vertical do gol
 
-        #intensityCanvas, #directionCanvas {
-            border: 1px solid #000;
-            margin: 10px;
-            background-color: #ffffff;
-            cursor: pointer;
-        }
+// Tamanho da bola
+const ballRadius = 10;
 
-        #score {
-            font-size: 24px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+// Tamanho do goleiro
+const goalkeeperWidth = 60;
+const goalkeeperHeight = 15;
 
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+// Espaço adicional fora do gol
+const additionalSpace = 50;
 
-        button:hover {
-            background-color: #45a049;
-        }
+// Desenhar o campo e o gol
+function drawField() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#6ab150';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        #menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    // Gol
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(goalX, goalY, goalWidth, 15); // Barra superior
+    ctx.fillRect(goalX, goalY, 15, goalHeight); // Barra lateral esquerda
+    ctx.fillRect(goalX + goalWidth - 15, goalY, 15, goalHeight); // Barra lateral direita
+}
 
-        #startButton {
-            padding: 15px 30px;
-            font-size: 24px;
-            cursor: pointer;
-            border: none;
-            border-radius: 10px;
-            background-color: #4CAF50;
-            color: white;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
+// Desenhar a bola
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.closePath();
+}
 
-        #gameScreen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
+// Desenhar o goleiro
+function drawGoalkeeper() {
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(goalkeeperX, goalkeeperY, goalkeeperWidth, goalkeeperHeight); // Goleiro
+}
 
-        #info {
-            margin-bottom: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="menu" class="container">
-        <h1>Bem-vindo ao Jogo de Pênaltis</h1>
-        <button id="startButton">Começar o Jogo</button>
-    </div>
-
-    <div id="gameScreen" class="container">
-        <div id="info">Clique em "Chutar" para começar o jogo!</div>
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <canvas id="intensityCanvas" width="300" height="50"></canvas>
-        <canvas id="directionCanvas" width="500" height="50"></canvas>
-        <div id="score">0</div>
-        <button id="shootButton">Chutar</button>
-    </div>
-
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const intensityCanvas = document.getElementById('intensityCanvas');
-        const intensityCtx = intensityCanvas.getContext('2d');
-        const directionCanvas = document.getElementById('directionCanvas');
-        const directionCtx = directionCanvas.getContext('2d');
-
-        let playerScore = 0;
-        let goalkeeperX = 360; // Posição inicial do goleiro no eixo X
-        let goalkeeperY = 60;  // Posição inicial do goleiro no eixo Y
-        let shotIntensity = 5;
-        let shotDirection = 250; // Centralizado no canvas de direção
-        let intensityIncreasing = true;
-        let directionMovingRight = true;
-        let goalkeeperDirectionX = 'right';
-        let goalkeeperDirectionY = 'down';
-        let intensityAnimationId;
-        let directionAnimationId;
-        let ballX = 400; // Posição inicial da bola
-        let ballY = 300; // Posição inicial da bola
-        let shooting = false; // Controle de chute
-
-        const goalWidth = 300;
-        const goalHeight = 130;
-        const goalX = (canvas.width - goalWidth) / 2;
-        const goalY = 50;
-
-        const ballRadius = 10;
-        const goalkeeperWidth = 60;
-        const goalkeeperHeight = 15;
-        const additionalSpace = 50;
-
-        function drawField() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#6ab150';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(goalX, goalY, goalWidth, 15);
-            ctx.fillRect(goalX, goalY, 15, goalHeight);
-            ctx.fillRect(goalX + goalWidth - 15, goalY, 15, goalHeight);
-        }
-
-        function drawBall() {
-            ctx.beginPath();
-            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        function drawGoalkeeper() {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(goalkeeperX, goalkeeperY, goalkeeperWidth, goalkeeperHeight);
-        }
-
-        function animateGoalkeeper() {
-            goalkeeperMoving = true;
-
-            function moveGoalkeeper() {
-                // Movimento no eixo X
-                if (goalkeeperDirectionX === 'right') {
-                    goalkeeperX += 4;
-                    if (goalkeeperX >= goalX + goalWidth - goalkeeperWidth) {
-                        goalkeeperDirectionX = 'left';
-                    }
-                } else {
-                    goalkeeperX -= 4;
-                    if (goalkeeperX <= goalX) {
-                        goalkeeperDirectionX = 'right';
-                    }
-                }
-
-                // Movimento no eixo Y
-                if (goalkeeperDirectionY === 'down') {
-                    goalkeeperY += 2;
-                    if (goalkeeperY >= goalY + goalHeight - goalkeeperHeight) {
-                        goalkeeperDirectionY = 'up';
-                    }
-                } else {
-                    goalkeeperY -= 2;
-                    if (goalkeeperY <= goalY) {
-                        goalkeeperDirectionY = 'down';
-                    }
-                }
-
-                drawField();
-                drawGoalkeeper();
-                drawBall();
-
-                if (shooting) {
-                    requestAnimationFrame(moveGoalkeeper);
-                }
+// Animação do goleiro (movimento nos eixos X e Y)
+function animateGoalkeeper() {
+    goalkeeperMoving = true;
+    const interval = setInterval(() => {
+        // Movimento no eixo X
+        if (goalkeeperDirectionX === 'right') {
+            goalkeeperX += 5;
+            if (goalkeeperX >= goalX + goalWidth - goalkeeperWidth) { // Limite à direita do gol
+                goalkeeperDirectionX = 'left';
             }
-
-            moveGoalkeeper();
-        }
-
-        function checkGoal() {
-            const goalArea = {
-                x: goalX - additionalSpace,
-                y: goalY,
-                width: goalWidth + 2 * additionalSpace,
-                height: goalHeight
-            };
-
-            const isGoalkeeperCovering = ballX + ballRadius > goalkeeperX && ballX - ballRadius < goalkeeperX + goalkeeperWidth &&
-                ballY + ballRadius > goalkeeperY && ballY - ballRadius < goalkeeperY + goalkeeperHeight;
-
-            const isBallInsideGoal = ballX + ballRadius >= goalArea.x && ballX - ballRadius <= goalArea.x + goalArea.width &&
-                ballY + ballRadius >= goalArea.y && ballY - ballRadius <= goalArea.y + goalArea.height;
-
-            const isBallTouchingCrossbar = isBallInsideGoal && ballY - ballRadius <= goalY + 15 && ballX + ballRadius >= goalX && ballX - ballRadius <= goalX + goalWidth;
-            const isBallTouchingSideBarLeft = isBallInsideGoal && ballX - ballRadius <= goalX + 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
-            const isBallTouchingSideBarRight = isBallInsideGoal && ballX + ballRadius >= goalX + goalWidth - 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
-
-            if (isGoalkeeperCovering) {
-                alert("O goleiro defendeu!");
-            } else if (isBallTouchingCrossbar || isBallTouchingSideBarLeft || isBallTouchingSideBarRight) {
-                alert("A bola tocou na trave!");
-            } else if (isBallInsideGoal) {
-                playerScore++;
-                document.getElementById('score').innerText = playerScore;
-                alert("Gol!");
-            } else {
-                alert("A bola saiu!");
+        } else {
+            goalkeeperX -= 5;
+            if (goalkeeperX <= goalX) { // Limite à esquerda do gol
+                goalkeeperDirectionX = 'right';
             }
-
-            restartGame();
         }
 
-        function animateIntensity() {
-            intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
-
-            intensityCtx.fillStyle = '#FF0000';
-            const intensityWidth = shotIntensity * 30;
-            intensityCtx.fillRect(0, 0, intensityWidth, intensityCanvas.height);
-
-            if (intensityIncreasing) {
-                shotIntensity += 0.1;
-                if (shotIntensity >= 10) {
-                    intensityIncreasing = false;
-                }
-            } else {
-                shotIntensity -= 0.1;
-                if (shotIntensity <= 1) {
-                    intensityIncreasing = true;
-                }
+        // Movimento no eixo Y
+        if (goalkeeperDirectionY === 'down') {
+            goalkeeperY += 5;
+            if (goalkeeperY >= goalY + goalHeight - goalkeeperHeight) { // Limite inferior do gol
+                goalkeeperDirectionY = 'up';
             }
-
-            intensityAnimationId = requestAnimationFrame(animateIntensity);
-        }
-
-        function animateDirection() {
-            directionCtx.clearRect(0, 0, directionCanvas.width, directionCanvas.height);
-
-            directionCtx.fillStyle = '#0000FF';
-            directionCtx.fillRect(shotDirection - 5, 0, 10, directionCanvas.height);
-
-            if (directionMovingRight) {
-                shotDirection += 4;
-                if (shotDirection >= directionCanvas.width - 5) {
-                    directionMovingRight = false;
-                }
-            } else {
-                shotDirection -= 4;
-                if (shotDirection <= 5) {
-                    directionMovingRight = true;
-                }
+        } else {
+            goalkeeperY -= 5;
+            if (goalkeeperY <= goalY) { // Limite superior do gol
+                goalkeeperDirectionY = 'down';
             }
-
-            directionAnimationId = requestAnimationFrame(animateDirection);
         }
-
-        function animateShot() {
-            shooting = true;
-            const dx = (shotDirection - ballX) / (40 - shotIntensity);
-            const dy = -(ballY - goalY - 20) / (40 - shotIntensity);
-
-            function moveBall() {
-                ballX += dx;
-                ballY += dy;
-
-                drawField();
-                drawGoalkeeper();
-                drawBall();
-
-                if (ballY <= goalY + goalHeight && ballY + ballRadius > goalY && ballX > goalX - additionalSpace && ballX < goalX + goalWidth + additionalSpace) {
-                    requestAnimationFrame(moveBall);
-                } else {
-                    checkGoal();
-                }
-            }
-
-            moveBall();
-        }
-
-        function restartGame() {
-            ballX = 400;
-            ballY = 300;
-            shooting = false;
-            drawField();
-            drawGoalkeeper();
-            drawBall();
-            animateIntensity();
-            animateDirection();
-        }
-
-        document.getElementById('startButton').addEventListener('click', () => {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'flex';
-            restartGame();
-        });
-
-        document.getElementById('shootButton').addEventListener('click', () => {
-            if (!shooting) {
-                cancelAnimationFrame(intensityAnimationId);
-                cancelAnimationFrame(directionAnimationId);
-                animateShot();
-            }
-        });
 
         drawField();
         drawGoalkeeper();
         drawBall();
-        animateIntensity();
-        animateDirection();
-    </script>
-</body>
 
-</html>
+        if (!goalkeeperMoving) {
+            clearInterval(interval);
+        }
+    }, 50); // Velocidade do movimento do goleiro
+}
+
+// Verificar se o chute foi gol
+function checkGoal() {
+    const goalArea = {
+        x: goalX - additionalSpace,
+        y: goalY,
+        width: goalWidth + 2 * additionalSpace,
+        height: goalHeight
+    };
+
+    const isGoalkeeperCovering = ballX + ballRadius > goalkeeperX && ballX - ballRadius < goalkeeperX + goalkeeperWidth &&
+                                 ballY + ballRadius > goalkeeperY && ballY - ballRadius < goalkeeperY + goalkeeperHeight;
+
+    // Verificar se a bola tocou a trave
+    const isBallInsideGoal = ballX + ballRadius >= goalArea.x && ballX - ballRadius <= goalArea.x + goalArea.width &&
+                             ballY + ballRadius >= goalArea.y && ballY - ballRadius <= goalArea.y + goalArea.height;
+
+    const isBallTouchingCrossbar = isBallInsideGoal && ballY - ballRadius <= goalY + 15 && ballX + ballRadius >= goalX && ballX - ballRadius <= goalX + goalWidth;
+    const isBallTouchingSideBarLeft = isBallInsideGoal && ballX - ballRadius <= goalX + 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
+    const isBallTouchingSideBarRight = isBallInsideGoal && ballX + ballRadius >= goalX + goalWidth - 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
+
+    if (isGoalkeeperCovering) {
+        alert("O goleiro defendeu!");
+    } else if (isBallTouchingCrossbar || isBallTouchingSideBarLeft || isBallTouchingSideBarRight) {
+        alert("A bola tocou na trave!");
+    } else if (isBallInsideGoal) {
+        playerScore++;
+        document.getElementById('score').innerText = playerScore;
+        alert("Gol!");
+        saveScore(playerScore);
+    } else {
+        alert("A bola saiu!");
+    }
+
+    // Reiniciar o jogo após o chute
+    restartGame(); // Reiniciar imediatamente após o chute
+}
+
+// Salvar o placar usando PHP (AJAX)
+function saveScore(score) {
+    fetch('save_score.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `score=${score}`
+    });
+}
+
+// Animação da intensidade
+function animateIntensity() {
+    intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
+
+    // Barra de intensidade
+    intensityCtx.fillStyle = '#FF0000';
+    intensityCtx.fillRect(0, 0, Math.min(shotIntensity * 30, intensityCanvas.width), 50); // Ajustar a largura para não exceder o canvas
+
+    // Controle automático da intensidade
+    if (intensityIncreasing) {
+        shotIntensity += 0.2;
+        if (shotIntensity >= 10) {
+            intensityIncreasing = false;
+        }
+    } else {
+        shotIntensity -= 0.2;
+        if (shotIntensity <= 1) {
+            intensityIncreasing = true;
+        }
+    }
+
+    intensityAnimationId = requestAnimationFrame(animateIntensity);
+}
+
+// Animação da direção
+function animateDirection() {
+    directionCtx.clearRect(0, 0, directionCanvas.width, directionCanvas.height);
+
+    // Indicador de direção
+    directionCtx.fillStyle = '#0000FF';
+    directionCtx.fillRect(shotDirection - 5, 0, 10, directionCanvas.height); // Ajustar a altura para o canvas de direção
+
+    // Controle automático da direção
+    if (directionMovingRight) {
+        shotDirection += 2; // Ajustar a velocidade para balancear a sensibilidade
+        if (shotDirection >= directionCanvas.width - 5) { // Limite direito
+            directionMovingRight = false;
+        }
+    } else {
+        shotDirection -= 2; // Ajustar a velocidade para balancear a sensibilidade
+        if (shotDirection <= 5) { // Limite esquerdo
+            directionMovingRight = true;
+        }
+    }
+
+    directionAnimationId = requestAnimationFrame(animateDirection);
+}
+
+// Animação da bola até o gol
+function animateBall(targetX, targetY) {
+    shooting = true;
+    const interval = setInterval(() => {
+        // Movimento gradual da bola com fator aleatório
+        const randomnessX = (Math.random() - 0.5) * 5; // Aleatoriedade no eixo X
+        const randomnessY = (Math.random() - 0.5) * 5; // Aleatoriedade no eixo Y
+
+        const dx = (targetX - ballX) * 0.1 + randomnessX;
+        const dy = (targetY - ballY) * 0.1 + randomnessY;
+
+        ballX += dx;
+        ballY += dy;
+
+        drawField();
+        drawGoalkeeper();
+        drawBall();
+
+        if (Math.abs(ballX - targetX) <= 5 && Math.abs(ballY - targetY) <= 5) {
+            clearInterval(interval);
+            shooting = false;
+            checkGoal(); // Verifica se a bola entrou ou foi defendida
+        }
+    }, 50);
+}
+
+// Reiniciar o jogo
+function restartGame() {
+    goalkeeperX = goalX + (goalWidth - goalkeeperWidth) / 2; // Centralizar o goleiro no novo tamanho do gol
+    goalkeeperY = goalY;
+    ballX = 400;
+    ballY = 300;
+    shotIntensity = 5;
+    shotDirection = 250;
+
+    drawField();
+    drawGoalkeeper();
+    drawBall();
+
+    // Parar e reiniciar as animações dos gráficos
+    cancelAnimationFrame(intensityAnimationId);
+    cancelAnimationFrame(directionAnimationId);
+
+    // Redesenhar gráficos de intensidade e direção
+    intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
+    directionCtx.clearRect(0, 0, directionCanvas.width, directionCanvas.height);
+    
+    animateIntensity();
+    animateDirection();
+}
+
+// Simular o chute
+function shoot() {
+    if (shooting) return; // Não permitir chute se já estiver atirando
+
+    // Parar as animações dos gráficos imediatamente ao chutar
+    cancelAnimationFrame(intensityAnimationId);
+    cancelAnimationFrame(directionAnimationId);
+    intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
+    directionCtx.clearRect(0, 0, directionCanvas.width, directionCanvas.height);
+
+    // Calcular a posição final da bola com base na direção e intensidade
+    const directionRatio = (shotDirection - 5) / (directionCanvas.width - 10); // Ajustar o cálculo da direção
+    const targetX = goalX + (directionRatio * (goalWidth + 2 * additionalSpace)) - additionalSpace; // Ajustar direção para permitir espaço adicional
+    const targetY = goalY + goalHeight - (shotIntensity * 10); // Ajustar a altura baseada na intensidade
+
+    // Restringir a posição X da bola dentro dos limites do campo com espaço adicional
+    const constrainedTargetX = Math.min(Math.max(targetX, goalX - additionalSpace), goalX + goalWidth + additionalSpace);
+
+    // Iniciar a animação da bola
+    animateBall(constrainedTargetX, targetY);
+
+    // Iniciar o movimento do goleiro
+    animateGoalkeeper();
+}
+
+// Inicializar o jogo
+function init() {
+    drawField();
+    drawBall();
+
+    // Iniciar as animações
+    animateIntensity();
+    animateDirection();
+}
+
+// Configurar evento de clique para o chute
+document.getElementById('shootButton').addEventListener('click', shoot);
+
+// Inicializar o jogo
+init();
