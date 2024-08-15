@@ -9,6 +9,8 @@ const countries = [
     { name: 'Inglaterra', flag: 'flags/inglaterra.png', primaryColor: '#FFFFFF', secondaryColor: '#FF0000', tertiaryColor: '#FFFFFF' } // Branco, Vermelho, Branco
 ];
 
+var matchCountry = [];
+
 function loadCountryOptions() {
     const container = document.querySelector('.country-selection');
     countries.forEach(country => {
@@ -21,6 +23,8 @@ function loadCountryOptions() {
 
 function startGame(countryName) {
     const country = countries.find(c => c.name.toLowerCase() === countryName);
+    matchCountry = [];
+
     if (country) {
         document.getElementById('menu').style.display = 'none';
         document.getElementById('gameScreen').style.display = 'flex';
@@ -66,11 +70,14 @@ function generateMatches(selectedCountryName) {
     match.className = 'match';
     match.innerHTML = `
         <span class="team"><img src="${selectedCountry.flag}" alt="Bandeira do ${selectedCountry.name}" width="50" height="auto"></span>
-        <span class="vs" id="scorePlayer1">0</span>
+        <span class="score" id="scorePlayer1">0</span>
         <span class="vs">x</span>
-        <span class="vs" id="scorePlayer2">0</span>
+        <span class="score" id="scorePlayer2">0</span>
         <span class="team"><img src="${randomCountry.flag}" alt="Bandeira do ${randomCountry.name}" width="50" height="auto"></span>
     `;
+
+    matchCountry.push(selectedCountry);
+    matchCountry.push(randomCountry);
 
     matchesList.appendChild(match);
     // matchesList.insertBefore("title", matchesList.firstChild);

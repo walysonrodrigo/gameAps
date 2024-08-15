@@ -384,6 +384,14 @@ function restartGame() {
     // Alternar para o próximo jogador
     currentPlayer = currentPlayer === 1 ? 2 : 1;
 
+    if (currentPlayer == 1) {
+        country = matchCountry[0];
+        setTorcidaColors(country.primaryColor, country.secondaryColor, country.tertiaryColor);
+    } else {
+        country = matchCountry[1];
+        setTorcidaColors(country.primaryColor, country.secondaryColor, country.tertiaryColor);
+    }
+
     cancelAnimationFrame(intensityAnimationId);
     cancelAnimationFrame(directionAnimationId);
 
