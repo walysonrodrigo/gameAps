@@ -66,9 +66,9 @@ function generateMatches(selectedCountryName) {
     match.className = 'match';
     match.innerHTML = `
         <span class="team"><img src="${selectedCountry.flag}" alt="Bandeira do ${selectedCountry.name}" width="50" height="auto"></span>
-        <span class="vs" id="score">0</span>
+        <span class="vs" id="scorePlayer1">0</span>
         <span class="vs">x</span>
-        <span class="vs" id="score">0</span>
+        <span class="vs" id="scorePlayer2">0</span>
         <span class="team"><img src="${randomCountry.flag}" alt="Bandeira do ${randomCountry.name}" width="50" height="auto"></span>
     `;
 

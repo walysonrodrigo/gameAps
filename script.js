@@ -37,6 +37,11 @@ const goalkeeperHeight = 30;
 // Espaço adicional fora do gol
 const additionalSpace = 50;
 
+// Variáveis para o placar
+let currentPlayer = 1; // Jogador inicial
+let player1Score = 0;
+let player2Score = 0;
+
 // Desenhar o campo e o gol
 function drawField() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -122,10 +127,12 @@ function checkGoal() {
         ballY - ballRadius <= goalY + 15 &&
         ballX + ballRadius >= goalX &&
         ballX - ballRadius <= goalX + goalWidth;
+
     const isBallTouchingSideBarLeft = isBallInsideGoal &&
         ballX - ballRadius <= goalX + 15 &&
         ballY + ballRadius >= goalY &&
         ballY - ballRadius <= goalY + goalHeight;
+
     const isBallTouchingSideBarRight = isBallInsideGoal &&
         ballX + ballRadius >= goalX + goalWidth - 15 &&
         ballY + ballRadius >= goalY &&
@@ -134,14 +141,19 @@ function checkGoal() {
     if (isBallInsideGoal) {
         if (isBallTouchingCrossbar || isBallTouchingSideBarLeft || isBallTouchingSideBarRight) {
             animateRicochet(ballX, ballY, true);
-            animateText("PERDEU!", 'red', restartGame); // Texto para defesa
+            animateText("PERDEU!", 'red', restartGame);
         } else {
-            playerScore++;
-            updateScore(playerScore);
-            animateText("GOL!", 'green', restartGame); // Texto para gol
+            if (currentPlayer === 1) {
+                player1Score++;
+                updateScore(player1Score, 1);
+            } else {
+                player2Score++;
+                updateScore(player2Score, 2);
+            }
+            animateText("GOL!", 'green', restartGame);
         }
     } else {
-        animateText("FORA!", 'red', restartGame); // Texto para fora
+        animateText("FORA!", 'red', restartGame);
     }
 }
 
@@ -253,31 +265,10 @@ function animateText(message, color, callback) {
 
 
 // Função para atualizar o placar com animação
-function updateScore(newScore) {
-    // Atualizar o valor do placar com uma animação de aumento
-    const scoreElement = document.getElementById('score');
+function updateScore(newScore, player) {
+    const scoreElement = document.getElementById(`scorePlayer${player}`);
     let currentScore = parseInt(scoreElement.innerText);
-    let increment = (newScore - currentScore) / 10; // Dividir a diferença em 10 etapas
-
-    function animate() {
-        if (Math.abs(newScore - currentScore) <= Math.abs(increment)) {
-            scoreElement.innerText = newScore;
-        } else {
-            currentScore += increment;
-            scoreElement.innerText = Math.round(currentScore);
-            requestAnimationFrame(animate);
-        }
-    }
-
-    animate();
-}
-
-// Função para atualizar o placar com animação
-function updateScore(newScore) {
-    // Atualizar o valor do placar com uma animação de aumento
-    const scoreElement = document.getElementById('score');
-    let currentScore = parseInt(scoreElement.innerText);
-    let increment = (newScore - currentScore) / 10; // Dividir a diferença em 10 etapas
+    let increment = (newScore - currentScore) / 10;
 
     function animate() {
         if (Math.abs(newScore - currentScore) <= Math.abs(increment)) {
@@ -379,7 +370,7 @@ function animateBall(targetX, targetY) {
 
 // Reiniciar o jogo
 function restartGame() {
-    goalkeeperX = goalX + (goalWidth - goalkeeperWidth) / 2; // Centralizar o goleiro no novo tamanho do gol
+    goalkeeperX = goalX + (goalWidth - goalkeeperWidth) / 2;
     goalkeeperY = goalY;
     ballX = 400;
     ballY = 300;
@@ -390,11 +381,12 @@ function restartGame() {
     drawGoalkeeper();
     drawBall();
 
-    // Parar e reiniciar as animações dos gráficos
+    // Alternar para o próximo jogador
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+
     cancelAnimationFrame(intensityAnimationId);
     cancelAnimationFrame(directionAnimationId);
 
-    // Redesenhar gráficos de intensidade e direção
     intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
     directionCtx.clearRect(0, 0, directionCanvas.width, directionCanvas.height);
 
