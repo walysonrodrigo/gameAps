@@ -31,8 +31,8 @@ const goalY = 50; // Posição vertical do gol
 const ballRadius = 10;
 
 // Tamanho do goleiro
-const goalkeeperWidth = 60;
-const goalkeeperHeight = 15;
+const goalkeeperWidth = 120; 
+const goalkeeperHeight = 30;
 
 // Espaço adicional fora do gol
 const additionalSpace = 50;
@@ -62,10 +62,9 @@ function drawBall() {
 // Desenhar o goleiro
 function drawGoalkeeper() {
     ctx.fillStyle = '#000000';
-    ctx.fillRect(goalkeeperX, goalkeeperY, goalkeeperWidth, goalkeeperHeight); // Goleiro
+    ctx.fillRect(goalkeeperX, goalkeeperY, goalkeeperWidth, goalkeeperHeight);
 }
 
-// Animação do goleiro (movimento nos eixos X e Y)
 function animateGoalkeeper() {
     goalkeeperMoving = true;
     const interval = setInterval(() => {
@@ -105,7 +104,7 @@ function animateGoalkeeper() {
     }, 50); // Velocidade do movimento do goleiro
 }
 
-// Verificar se o chute foi gol
+
 function checkGoal() {
     const goalArea = {
         x: goalX - additionalSpace,
@@ -114,32 +113,144 @@ function checkGoal() {
         height: goalHeight
     };
 
-    const isGoalkeeperCovering = ballX + ballRadius > goalkeeperX && ballX - ballRadius < goalkeeperX + goalkeeperWidth &&
-                                ballY + ballRadius > goalkeeperY && ballY - ballRadius < goalkeeperY + goalkeeperHeight;
+    const isBallInsideGoal = ballX + ballRadius >= goalArea.x &&
+        ballX - ballRadius <= goalArea.x + goalArea.width &&
+        ballY + ballRadius >= goalArea.y &&
+        ballY - ballRadius <= goalArea.y + goalArea.height;
 
-    // Verificar se a bola tocou a trave
-    const isBallInsideGoal = ballX + ballRadius >= goalArea.x && ballX - ballRadius <= goalArea.x + goalArea.width &&
-                            ballY + ballRadius >= goalArea.y && ballY - ballRadius <= goalArea.y + goalArea.height;
+    const isBallTouchingCrossbar = isBallInsideGoal &&
+        ballY - ballRadius <= goalY + 15 &&
+        ballX + ballRadius >= goalX &&
+        ballX - ballRadius <= goalX + goalWidth;
+    const isBallTouchingSideBarLeft = isBallInsideGoal &&
+        ballX - ballRadius <= goalX + 15 &&
+        ballY + ballRadius >= goalY &&
+        ballY - ballRadius <= goalY + goalHeight;
+    const isBallTouchingSideBarRight = isBallInsideGoal &&
+        ballX + ballRadius >= goalX + goalWidth - 15 &&
+        ballY + ballRadius >= goalY &&
+        ballY - ballRadius <= goalY + goalHeight;
 
-    const isBallTouchingCrossbar = isBallInsideGoal && ballY - ballRadius <= goalY + 15 && ballX + ballRadius >= goalX && ballX - ballRadius <= goalX + goalWidth;
-    const isBallTouchingSideBarLeft = isBallInsideGoal && ballX - ballRadius <= goalX + 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
-    const isBallTouchingSideBarRight = isBallInsideGoal && ballX + ballRadius >= goalX + goalWidth - 15 && ballY + ballRadius >= goalY && ballY - ballRadius <= goalY + goalHeight;
-
-    if (isGoalkeeperCovering) {
-        alert("O goleiro defendeu!");
-    } else if (isBallTouchingCrossbar || isBallTouchingSideBarLeft || isBallTouchingSideBarRight) {
-        alert("A bola tocou na trave!");
-    } else if (isBallInsideGoal) {
-        playerScore++;
-        updateScore(playerScore); // Atualizar o placar com animação
-        alert("Gol!");
+    if (isBallInsideGoal) {
+        if (isBallTouchingCrossbar || isBallTouchingSideBarLeft || isBallTouchingSideBarRight) {
+            animateRicochet(ballX, ballY, true);
+            animateText("PERDEU!", 'red', restartGame); // Texto para defesa
+        } else {
+            playerScore++;
+            updateScore(playerScore);
+            animateText("GOL!", 'green', restartGame); // Texto para gol
+        }
     } else {
-        alert("A bola saiu!");
+        animateText("FORA!", 'red', restartGame); // Texto para fora
+    }
+}
+
+
+// Função para calcular a posição inicial para o ricocheteio
+function calculateRicochetTarget(startX, startY, hitOnGoalPost) {
+    // Se bateu na trave, pode voltar um pouco mais para simular um ricocheteio realista
+    const ricochetDistance = hitOnGoalPost ? 30 : 0; // Ajuste a distância conforme necessário
+
+    // Define o alvo de retorno dependendo do impacto
+    const targetX = startX - ricochetDistance;
+    const targetY = startY + ricochetDistance;
+
+    return { targetX, targetY };
+}
+
+// Animação de ricocheteio da bola
+function animateRicochet(startX, startY, hitOnGoalPost) {
+    const ricochetDuration = 1000; // Duração total da animação em milissegundos
+    const numSteps = 30; // Número de passos para a animação
+    const intervalTime = ricochetDuration / numSteps; // Intervalo entre atualizações
+
+    // Define a posição final da bola após o ricocheteio
+    const ricochetDistance = hitOnGoalPost ? 30 : 0; // Distância do ricocheteio
+    const targetX = startX - ricochetDistance; // Ajuste a direção de retorno
+    const targetY = startY - ricochetDistance; // Ajuste a altura de retorno
+
+    let startTime = null;
+
+    function ricochetStep(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / ricochetDuration, 1); // Progresso da animação
+
+        // Interpolação linear para a posição da bola
+        const newX = startX + (targetX - startX) * progress;
+        const newY = startY + (targetY - startY) * progress;
+
+        // Atualizar a tela
+        drawField();
+        drawGoalkeeper();
+        drawBall(newX, newY);
+
+        // Continuar a animação até atingir a posição final
+        if (progress < 1) {
+            requestAnimationFrame(ricochetStep);
+        } else {
+            restartGame(); // Reiniciar o jogo após o ricocheteio
+        }
     }
 
-    // Reiniciar o jogo após o chute
-    restartGame(); // Reiniciar imediatamente após o chute
+    // Iniciar a animação
+    requestAnimationFrame(ricochetStep);
 }
+
+// Função para animar texto com efeitos visuais
+function animateText(message, color, callback) {
+    const messageDuration = 2000; // Duração total da animação em milissegundos
+    const numSteps = 30; // Número de passos para a animação
+    const intervalTime = messageDuration / numSteps; // Intervalo entre atualizações
+    const startTime = Date.now(); // Tempo de início da animação
+
+    function textStep() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / messageDuration, 1); // Progresso da animação
+        const scale = 1 + 0.5 * progress; // Escala do texto
+
+        // Configura o estilo do texto
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
+        drawField(); // Redesenhar o campo
+        drawGoalkeeper(); // Redesenhar o goleiro
+        drawBall(); // Redesenhar a bola
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2); // Centraliza o texto
+        ctx.scale(scale, scale); // Aplica a escala
+        ctx.translate(-canvas.width / 2, -canvas.height / 2); // Reverte a centralização
+
+        // Configura gradiente de cor
+        const gradient = ctx.createLinearGradient(canvas.width / 2 - 100, canvas.height / 2 - 20, canvas.width / 2 + 100, canvas.height / 2 + 20);
+        gradient.addColorStop(0, 'yellow');
+        gradient.addColorStop(1, color);
+
+        ctx.fillStyle = gradient;
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Adiciona sombra ao texto
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 5;
+        ctx.shadowOffsetY = 5;
+
+        ctx.fillText(message, canvas.width / 2, canvas.height / 2); // Desenha o texto
+
+        ctx.restore();
+
+        // Continua a animação até o final
+        if (progress < 1) {
+            requestAnimationFrame(textStep);
+        } else if (callback) {
+            setTimeout(callback, 500); // Espera um pouco antes de chamar a função de reinício
+        }
+    }
+
+    requestAnimationFrame(textStep);
+}
+
+
 
 // Função para atualizar o placar com animação
 function updateScore(newScore) {
@@ -266,7 +377,7 @@ function restartGame() {
     // Redesenhar gráficos de intensidade e direção
     intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
     directionCtx.clearRect(0, 0, directionCanvas.width, directionCanvas.height);
-    
+
     animateIntensity();
     animateDirection();
 }
@@ -296,6 +407,47 @@ function shoot() {
     animateGoalkeeper();
 }
 
+// Animação de ricocheteio da bola
+// Animação de ricocheteio da bola
+function animateRicochet(startX, startY, hitOnGoalPost) {
+    const ricochetDuration = 800; // Duração total da animação em milissegundos
+    const numSteps = 30; // Número de passos para a animação
+    const intervalTime = ricochetDuration / numSteps; // Intervalo entre atualizações
+
+    // Define a posição final da bola após o ricocheteio
+    const ricochetDistance = hitOnGoalPost ? 30 : 0; // Distância do ricocheteio
+    const targetX = startX - ricochetDistance; // Ajuste a direção de retorno
+    const targetY = startY - ricochetDistance; // Ajuste a altura de retorno
+
+    let startTime = null;
+
+    function ricochetStep(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / ricochetDuration, 1); // Progresso da animação
+
+        // Interpolação linear para a posição da bola
+        const newX = startX + (targetX - startX) * progress;
+        const newY = startY + (targetY - startY) * progress;
+
+        // Atualizar a tela
+        drawField();
+        drawGoalkeeper();
+        drawBall(newX, newY);
+
+        // Continuar a animação até atingir a posição final
+        if (progress < 1) {
+            requestAnimationFrame(ricochetStep);
+        } else {
+            restartGame(); // Reiniciar o jogo após o ricocheteio
+        }
+    }
+
+    // Iniciar a animação
+    requestAnimationFrame(ricochetStep);
+}
+
+
+
 // Inicializar o jogo
 function init() {
     drawField();
@@ -307,7 +459,7 @@ function init() {
 }
 
 // Configurar evento de clique para o botão Iniciar
-document.getElementById('startButton').addEventListener('click', function() {
+document.getElementById('startButton').addEventListener('click', function () {
     document.getElementById('menu').style.display = 'none';
     document.getElementById('gameScreen').style.display = 'flex';
     init(); // Inicializa o jogo
