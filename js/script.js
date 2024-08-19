@@ -283,17 +283,6 @@ function updateScore(newScore, player) {
     animate();
 }
 
-// Salvar o placar usando PHP (AJAX)
-function saveScore(score) {
-    fetch('save_score.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `score=${score}`
-    });
-}
-
 // Animação da intensidade
 function animateIntensity() {
     intensityCtx.clearRect(0, 0, intensityCanvas.width, intensityCanvas.height);
