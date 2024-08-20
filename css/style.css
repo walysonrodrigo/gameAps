@@ -69,6 +69,40 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.penalties {
+    margin-top: 5px;
+    display: flex;
+    gap: 5px; /* Espaço entre as bolinhas */
+}
+
+.penalty-dot {
+    width: 10px;
+    height: 10px;
+    background-color: grey; /* Cor das bolinhas (você pode mudar conforme necessário) */
+    border-radius: 50%;
+}
+
+.penalty-dot.check {
+    background-color: green; /* Cor das bolinhas ativas (você pode mudar conforme necessário) */
+}
+
+.penalty-dot.error {
+    background-color: red; /* Cor das bolinhas inativas (você pode mudar conforme necessário) */
+}
+
 #gameArea {
     display: flex;
     flex-direction: column;

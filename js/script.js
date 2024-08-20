@@ -5,9 +5,7 @@ const intensityCtx = intensityCanvas.getContext('2d');
 const directionCanvas = document.getElementById('directionCanvas');
 const directionCtx = directionCanvas.getContext('2d');
 
-let playerScore = 0;
-let goalkeeperX = 360; // Posição inicial do goleiro no eixo X
-let goalkeeperY = 60;  // Posição inicial do goleiro no eixo Y
+let playerScore = 0; // Posição inicial do goleiro no eixo Y
 let goalkeeperMoving = false;
 let shotIntensity = 5;
 let shotDirection = 250; // Centralizado no canvas de direção
@@ -27,15 +25,24 @@ const goalHeight = 130;
 const goalX = (canvas.width - goalWidth) / 2; // Centralizar horizontalmente
 const goalY = 50; // Posição vertical do gol
 
+// Parte interna do gol
+const goalInsideWidth = 280;
+const goalInsideHeight = 120;
+const goalInsideX = goalX + 10; // Centralizar horizontalmente
+const goalInsideY = goalY + 10; // Ajustar a posição vertical
+
 // Tamanho da bola
 const ballRadius = 10;
 
 // Tamanho do goleiro
-const goalkeeperWidth = 120; 
+const goalkeeperWidth = 120;
 const goalkeeperHeight = 30;
+let goalkeeperX = 360; // Posição inicial do goleiro no eixo X
+let goalkeeperY = goalY + goalHeight - goalkeeperHeight;
+let goalkeeperInterval;
 
 // Indica se o goleiro está tentando defender
-let goalieDefending = false; 
+let goalieDefending = false;
 
 
 // Espaço adicional fora do gol
@@ -43,8 +50,12 @@ const additionalSpace = 50;
 
 // Variáveis para o placar
 let currentPlayer = 1; // Jogador inicial
+
 let player1Score = 0;
 let player2Score = 0;
+
+let player1Penalties = [];
+let player2Penalties = [];
 
 // Desenhar o campo e o gol
 function drawField() {
@@ -54,9 +65,11 @@ function drawField() {
 
     // Gol
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(goalX, goalY, goalWidth, 15); // Barra superior
-    ctx.fillRect(goalX, goalY, 15, goalHeight); // Barra lateral esquerda
-    ctx.fillRect(goalX + goalWidth - 15, goalY, 15, goalHeight); // Barra lateral direita
+    ctx.fillRect(goalX, goalY, goalWidth, goalHeight);
+
+    // Parte interna do gol
+    ctx.fillStyle = '#6AB150';
+    ctx.fillRect(goalInsideX, goalInsideY, goalInsideWidth, goalInsideHeight);
 }
 
 // Desenhar a bola
@@ -75,32 +88,24 @@ function drawGoalkeeper() {
 }
 
 function animateGoalkeeper() {
+    if (goalkeeperInterval) {
+        clearInterval(goalkeeperInterval); // Limpa o intervalo anterior, se houver
+    }
+
     goalkeeperMoving = true;
-    const interval = setInterval(() => {
+
+    goalkeeperInterval = setInterval(() => {
         if (!goalieDefending) { // Apenas move o goleiro se ele não estiver defendendo
             // Movimento no eixo X
             if (goalkeeperDirectionX === 'right') {
-                goalkeeperX += 5; // Velocidade reduzida para um movimento mais suave
+                goalkeeperX += 10; // Velocidade constante
                 if (goalkeeperX >= goalX + goalWidth - goalkeeperWidth) { // Limite à direita do gol
                     goalkeeperDirectionX = 'left';
                 }
             } else {
-                goalkeeperX -= 5; // Velocidade reduzida para um movimento mais suave
+                goalkeeperX -= 10; // Velocidade constante
                 if (goalkeeperX <= goalX) { // Limite à esquerda do gol
                     goalkeeperDirectionX = 'right';
-                }
-            }
-
-            // Movimento no eixo Y
-            if (goalkeeperDirectionY === 'down') {
-                goalkeeperY += 3; // Velocidade menor no eixo Y para realismo
-                if (goalkeeperY >= goalY + goalHeight - goalkeeperHeight) { // Limite inferior do gol
-                    goalkeeperDirectionY = 'up';
-                }
-            } else {
-                goalkeeperY -= 3; // Velocidade menor no eixo Y para realismo
-                if (goalkeeperY <= goalY) { // Limite superior do gol
-                    goalkeeperDirectionY = 'down';
                 }
             }
         }
@@ -108,61 +113,50 @@ function animateGoalkeeper() {
         drawField();
         drawGoalkeeper();
         drawBall();
-
-        if (!goalkeeperMoving) {
-            clearInterval(interval);
-        }
-    }, 100); // Intervalo ajustado para suavizar o movimento
+    }, 100); // Intervalo constante para manter a velocidade do goleiro
 }
 
 
 function checkGoal() {
     const goalArea = {
-        x: goalX - additionalSpace,
+        x: goalX,
         y: goalY,
-        width: goalWidth + 2 * additionalSpace,
+        width: goalWidth,
         height: goalHeight
     };
 
-    const isBallInsideGoal = ballX + ballRadius >= goalArea.x &&
-        ballX - ballRadius <= goalArea.x + goalArea.width &&
-        ballY + ballRadius >= goalArea.y &&
-        ballY - ballRadius <= goalArea.y + goalArea.height;
+    const insideGoal = isBallInsideGoal(ballX, ballY, ballRadius, goalArea);
 
-    const isBallTouchingCrossbar = isBallInsideGoal &&
-        ballY - ballRadius <= goalY + 15 &&
-        ballX + ballRadius >= goalX &&
-        ballX - ballRadius <= goalX + goalWidth;
-
-    const isBallTouchingSideBarLeft = isBallInsideGoal &&
-        ballX - ballRadius <= goalX + 15 &&
-        ballY + ballRadius >= goalY &&
-        ballY - ballRadius <= goalY + goalHeight;
-
-    const isBallTouchingSideBarRight = isBallInsideGoal &&
-        ballX + ballRadius >= goalX + goalWidth - 15 &&
-        ballY + ballRadius >= goalY &&
-        ballY - ballRadius <= goalY + goalHeight;
-
-    if (isBallInsideGoal) {
-        if (isBallTouchingCrossbar || isBallTouchingSideBarLeft || isBallTouchingSideBarRight) {
-            animateRicochet(ballX, ballY, true);
-            animateText("PERDEU!", 'red', restartGame);
+    if (insideGoal) {
+        if (currentPlayer === 1) {
+            player1Score++;
+            updateScore(player1Score, 1);
+            updatePenalty(1, true);
         } else {
-            if (currentPlayer === 1) {
-                player1Score++;
-                updateScore(player1Score, 1);
-            } else {
-                player2Score++;
-                updateScore(player2Score, 2);
-            }
-            animateText("GOL!", 'green', restartGame);
+            player2Score++;
+            updateScore(player2Score, 2);
+            updatePenalty(2, true);
         }
-    } else {
-        animateText("FORA!", 'red', restartGame);
+        animateText("GOL!", 'green', restartGame);
+        return;
     }
+
+    if (currentPlayer === 1) {
+        updatePenalty(1, false);
+    } else {
+        updatePenalty(2, false);
+    }
+
+    animateText("PERDEU!", 'red', restartGame);
 }
 
+function isBallInsideGoal(ballX, ballY, ballRadius, goalArea) {
+    // Verifica se o centro da bola está dentro dos limites da área do gol
+    const isInsideHorizontally = ballX - ballRadius >= goalArea.x && ballX + ballRadius <= goalArea.x + goalArea.width;
+    const isInsideVertically = ballY - ballRadius >= goalArea.y && ballY + ballRadius <= goalArea.y + goalArea.height;
+
+    return isInsideHorizontally && isInsideVertically;
+}
 
 // Função para calcular a posição inicial para o ricocheteio
 function calculateRicochetTarget(startX, startY, hitOnGoalPost) {
@@ -174,42 +168,6 @@ function calculateRicochetTarget(startX, startY, hitOnGoalPost) {
     const targetY = startY + ricochetDistance;
 
     return { targetX, targetY };
-}
-
-// Animação de ricocheteio da bola
-function animateRicochet(startX, startY, hitOnGoalPost) {
-    const ricochetDuration = 1000; // Duração total da animação em milissegundos
-    const numSteps = 30; // Número de passos para a animação
-    const intervalTime = ricochetDuration / numSteps; // Intervalo entre atualizações
-
-    // Define a posição final da bola após o ricocheteio
-    const ricochetDistance = hitOnGoalPost ? 30 : 0; // Distância do ricocheteio
-    const targetX = startX - ricochetDistance; // Ajuste a direção de retorno
-    const targetY = startY - ricochetDistance; // Ajuste a altura de retorno
-
-    let startTime = null;
-
-    function ricochetStep(timestamp) {
-        if (!startTime) startTime = timestamp;
-        const progress = Math.min((timestamp - startTime) / ricochetDuration, 1); // Progresso da animação
-
-        // Interpolação linear para a posição da bola
-        const newX = startX + (targetX - startX) * progress;
-        const newY = startY + (targetY - startY) * progress;
-
-        // Atualizar a tela
-        drawField();
-        drawGoalkeeper();
-        drawBall(newX, newY);
-
-        // Continuar a animação até atingir a posição final
-        if (progress < 1) {
-            requestAnimationFrame(ricochetStep);
-        }
-    }
-
-    // Iniciar a animação
-    requestAnimationFrame(ricochetStep);
 }
 
 // Função para animar texto com efeitos visuais
@@ -265,7 +223,6 @@ function animateText(message, color, callback) {
 
     requestAnimationFrame(textStep);
 }
-
 
 
 // Função para atualizar o placar com animação
@@ -338,14 +295,40 @@ function animateDirection() {
 // Animação da bola até o gol
 function animateBall(targetX, targetY) {
     shooting = true;
-    goalkeeperMoving = false; // Pausa o movimento do goleiro durante o chute
 
-    // Decidir posição defensiva do goleiro
+    goalkeeperMoving = false; // Pausa o movimento do goleiro durante o chute
     goalieDefending = true;
-    const randomMoveX = Math.random() * 50 - 25; // Movimento aleatório pequeno no eixo X
-    const randomMoveY = Math.random() * 20 - 10; // Movimento aleatório pequeno no eixo Y
-    goalkeeperX += randomMoveX;
-    goalkeeperY += randomMoveY;
+
+    // Verificar se a bola passa pelo goleiro antes de iniciar o movimento
+    const B0 = { x: ballX, y: ballY };
+    const Bf = { x: targetX, y: targetY };
+    const G0 = { x: goalkeeperX, y: goalkeeperY };
+    const Gf = { x: goalkeeperX + 120, y: goalkeeperY };
+
+    const ballWillPassGoalkeeper = verificarIntersecaoReta(B0, Bf, G0, Gf);
+
+    if (ballWillPassGoalkeeper) {
+        // Verifique se a posição y da bola coincide com a do goleiro
+        const yNearGoalkeeper = targetY >= goalkeeperY && targetY <= goalkeeperY + goalkeeperHeight;
+
+        if (yNearGoalkeeper) {
+            // Se o goleiro está no caminho, marque como defesa
+            ballX = goalkeeperX; // Posicione a bola na posição x do goleiro
+            ballY = goalkeeperY + goalkeeperHeight / 2; // Posicione a bola na altura do goleiro
+            animateText("DEFENDEU!", 'blue', restartGame);
+            shooting = false;
+            goalkeeperMoving = true; // Retoma o movimento do goleiro após o chute
+            goalieDefending = false; // Reseta o estado de defesa
+
+            if (currentPlayer === 1) {
+                updatePenalty(1, false);
+            } else {
+                updatePenalty(2, false);
+            }
+
+            return; // Para a animação aqui
+        }
+    }
 
     const interval = setInterval(() => {
         const dx = (targetX - ballX) * 0.1;
@@ -358,6 +341,26 @@ function animateBall(targetX, targetY) {
         drawGoalkeeper();
         drawBall();
 
+        // Verificação de colisão com o goleiro
+        const ballCollidesWithGoalkeeper = ballX + ballRadius >= goalkeeperX &&
+            ballX - ballRadius <= goalkeeperX + goalkeeperWidth &&
+            ballY + ballRadius >= goalkeeperY &&
+            ballY - ballRadius <= goalkeeperY + goalkeeperHeight;
+
+        if (ballCollidesWithGoalkeeper) {
+            clearInterval(interval);
+            animateText("DEFENDEU!", 'blue', restartGame);
+            shooting = false;
+            goalkeeperMoving = true; // Retoma o movimento do goleiro após o chute
+            goalieDefending = false; // Reseta o estado de defesa
+
+            if (currentPlayer === 1) {
+                updatePenalty(1, false);
+            } else {
+                updatePenalty(2, false);
+            }
+        }
+
         if (Math.abs(ballX - targetX) <= 5 && Math.abs(ballY - targetY) <= 5) {
             clearInterval(interval);
             shooting = false;
@@ -367,12 +370,9 @@ function animateBall(targetX, targetY) {
         }
     }, 50);
 }
-
-
 // Reiniciar o jogo
 function restartGame() {
     goalkeeperX = goalX + (goalWidth - goalkeeperWidth) / 2;
-    goalkeeperY = goalY;
     ballX = 400;
     ballY = 300;
     shotIntensity = 5;
@@ -416,26 +416,59 @@ function shoot() {
     // Calcular a posição final da bola com base na direção e intensidade
     const directionRatio = (shotDirection - 5) / (directionCanvas.width - 10); // Ajustar o cálculo da direção
     const targetX = goalX + (directionRatio * (goalWidth + 2 * additionalSpace)) - additionalSpace; // Ajustar direção para permitir espaço adicional
-    const targetY = goalY + goalHeight - (shotIntensity * 10); // Ajustar a altura baseada na intensidade
+    const targetY = goalY + goalHeight - (shotIntensity * 10) + 10; // Ajustar a altura baseada na intensidade
 
-    // Restringir a posição X da bola dentro dos limites do campo com espaço adicional
+    // // Restringir a posição X da bola dentro dos limites do campo com espaço adicional
     const constrainedTargetX = Math.min(Math.max(targetX, goalX - additionalSpace), goalX + goalWidth + additionalSpace);
 
-    // Iniciar a animação da bola
+    // // Iniciar a animação da bola
     animateBall(constrainedTargetX, targetY);
 
-    // Iniciar o movimento do goleiro
+    // // Iniciar o movimento do goleiro
     animateGoalkeeper();
 }
+
+function updatePenalty(player, isGoal) {
+    let penaltyElement;
+
+    if (player == 1) {
+        penaltyElement = document.getElementById(`penaltyPlayer${player}_${player1Penalties.length + 1}`);
+        player1Penalties.push(isGoal);
+    } else {
+        penaltyElement = document.getElementById(`penaltyPlayer${player}_${player2Penalties.length + 1}`);
+        player2Penalties.push(isGoal);
+    }
+
+    penaltyElement.style.backgroundColor = isGoal ? 'green' : 'red';
+
+    if (player1Penalties.length === 5 && player2Penalties.length === 5) {
+        setTimeout(() => {
+            if (player1Score === player2Score) {
+                animateText("EMPATE!", 'yellow', restartGame);
+            } else {
+                const winner = player1Score > player2Score ? 1 : 2;
+                animateText(`VITÓRIA DO JOGADOR ${winner}!`, 'green', restartGame);
+            }
+
+            // recaregar a página
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }, 1000);
+    }
+}
+
 
 // Inicializar o jogo
 function init() {
     drawField();
     drawBall();
+    drawGoalkeeper();
 
     // Iniciar as animações
     animateIntensity();
     animateDirection();
+    animateGoalkeeper();
 }
 
 // Configurar evento de clique para o botão Iniciar

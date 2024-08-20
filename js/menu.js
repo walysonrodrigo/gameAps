@@ -69,11 +69,29 @@ function generateMatches(selectedCountryName) {
     const match = document.createElement('div');
     match.className = 'match';
     match.innerHTML = `
-        <span class="team"><img src="${selectedCountry.flag}" alt="Bandeira do ${selectedCountry.name}" width="50" height="auto"></span>
+        <span class="team">
+            <img src="${selectedCountry.flag}" alt="Bandeira do ${selectedCountry.name}" width="50" height="auto">
+            <div class="penalties" id="penaltiesPlayer1">
+                <span class="penalty-dot" id="penaltyPlayer1_1"></span>
+                <span class="penalty-dot" id="penaltyPlayer1_2"></span>
+                <span class="penalty-dot" id="penaltyPlayer1_3"></span>
+                <span class="penalty-dot" id="penaltyPlayer1_4"></span>
+                <span class="penalty-dot" id="penaltyPlayer1_5"></span>
+            </div>
+        </span>
         <span class="score" id="scorePlayer1">0</span>
         <span class="vs">x</span>
         <span class="score" id="scorePlayer2">0</span>
-        <span class="team"><img src="${randomCountry.flag}" alt="Bandeira do ${randomCountry.name}" width="50" height="auto"></span>
+        <span class="team">
+            <img src="${randomCountry.flag}" alt="Bandeira do ${randomCountry.name}" width="50" height="auto">
+            <div class="penalties" id="penaltiesPlayer1">
+                <span class="penalty-dot" id="penaltyPlayer2_1"></span>
+                <span class="penalty-dot" id="penaltyPlayer2_2"></span>
+                <span class="penalty-dot" id="penaltyPlayer2_3"></span>
+                <span class="penalty-dot" id="penaltyPlayer2_4"></span>
+                <span class="penalty-dot" id="penaltyPlayer2_5"></span>
+            </div>
+        </span>
     `;
 
     matchCountry.push(selectedCountry);
@@ -82,6 +100,7 @@ function generateMatches(selectedCountryName) {
     matchesList.appendChild(match);
     // matchesList.insertBefore("title", matchesList.firstChild);
 }
+
 
 
 loadFans();
