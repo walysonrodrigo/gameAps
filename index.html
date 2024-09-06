@@ -11,7 +11,7 @@
 </head>
 <body>
     <div id="menu" class="container">
-        <img src="images/cklogo2.png" style="width: 400px;">
+        <img src="images/cklogo2.png" class="logo" style="width: 400px;">
         <p>Escolha o país que deseja representar</p>
         <div class="country-selection">
             <!-- Bandeiras dos países para seleção -->
@@ -20,10 +20,10 @@
     <div id="gameScreen" class="container">
         <!-- help -->
         <div id="help" style="width: 100%;">
-            <img src="images/info.png" style="max-height: 50px;" onclick="showInstructions()">
+            <img src="images/info.png" id="helpImg" style="max-height: 50px;" onclick="showInstructions()">
         </div>
 
-        <div id="matches" class="container" style="margin-top: -60px;">
+        <div id="matches" class="container">
             <div id="matches-list"></div>
         </div>
         <div id="gameArea">
@@ -41,13 +41,13 @@
     </div>
 
     <div id="gameOverScreen" class="container">
-        <img src="images/cklogo2.png" style="width: 400px;">
+        <img src="images/cklogo2.png" class="logo" style="width: 400px;">
         <button id="restartButton" class="gameOverButton" onclick="revanche()">Revanche</button>
         <button id="menuButton" class="gameOverButton" onclick="showMenu()">Menu</button>
     </div>
     
     <div id="instructionScreen" class="container">
-        <img src="images/cklogo2.png" style="width: 400px;">
+        <img src="images/cklogo2.png" class="logo" style="width: 400px;">
         <div>
             <h2>Instruções</h2>
             <div class="instructions">

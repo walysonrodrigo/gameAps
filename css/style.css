@@ -114,6 +114,10 @@ body {
     background-color: #f0ddd8;
 }
 
+#matches {
+    margin-top: -60px !important;
+}
+
 .score {
     font-size: 50px;
     font-weight: bold;
@@ -230,4 +234,132 @@ body {
     background-repeat: no-repeat;
     background-position: left center;
     padding-left: 30px; /* Ajusta o espaçamento do texto */
+}
+
+@media (max-width: 600px) {
+    .score {
+        font-size: 30px;
+    }
+
+    .scoreboard {
+        flex-direction: column;
+    }
+
+    .team {
+        margin: 10px 0;
+    }
+
+    .penalties {
+        justify-content: center;
+    }
+
+    #gameCanvas {
+        width: 100%;
+    }
+
+    #intensityCanvas, #directionCanvas {
+        width: 100%;
+    }
+
+    #shootButton {
+        width: 100%;
+    }
+
+    #shootButton img {
+        display: none;
+    }
+
+    #helpButton {
+        padding-left: 20px;
+    }
+
+    .labelGrafic {
+        font-size: 16px;
+    }
+
+    .penalty-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .gameOverButton {
+        width: 100%;
+    }
+
+    .gameOverButton {
+        padding: 10px 20px;
+    }
+
+    #gameOverScreen {
+        width: 100%;
+    }
+
+    #gameScreen {
+        width: 89%;
+    }
+
+    #menu {
+        font-size: 20px;
+        padding: 10px 15px;
+        width: 90%;
+    }
+
+    #startButton {
+        font-size: 20px;
+        padding: 10px 20px;
+    }
+
+    #instructionScreen {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    #menuButton {
+        font-size: 16px;
+    }
+
+    .shootButton {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    .gameOverButton {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    #helpButton {
+        font-size: 16px;
+    }
+
+    .labelGrafic {
+        font-size: 16px;
+    }
+
+    .penalty-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    #matches {
+        margin-top: -50px !important;
+    }
+
+
+    #torcida .seat {
+        display: none; /* Esconde todas as divs */
+    }
+    
+    #torcida .seat:nth-child(-n+17) {
+        display: block; /* Exibe apenas as 5 primeiras */
+    }
+
+    .logo{
+        width: 250px !important;
+    }
+
+    #helpImg{
+        max-height: 30px !important;
+    }
+    
 }
