@@ -110,5 +110,12 @@ function revanche() {
     document.getElementById('gameScreen').style.display = 'flex';
     document.getElementById('gameOverScreen').style.display = 'none';
 }
+
+function showInstructions() {
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'none';
+    document.getElementById('instructions').style.display = 'flex';
+}
+
 loadFans();
 loadCountryOptions(); // Carrega as opções de países quando a página é carregada
