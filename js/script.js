@@ -441,7 +441,7 @@ function updatePenalty(player, isGoal) {
 
     penaltyElement.style.backgroundColor = isGoal ? 'green' : 'red';
 
-    if (player1Penalties.length === 5 && player2Penalties.length === 0) {
+    if (player1Penalties.length === 5 && player2Penalties.length === 5) {
         setTimeout(() => {
             if (player1Score === player2Score) {
                 animateText("EMPATE!", 'yellow', restartGame);
@@ -501,7 +501,7 @@ function startShoot() {
     
     setTimeout(() => {
         document.getElementById('shootButton').disabled = false;
-    }, 4500);
+    }, 4000);
 }
 
 init();
