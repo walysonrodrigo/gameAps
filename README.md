@@ -30,3 +30,4 @@ Este é um jogo de pênaltis interativo onde o jogador precisa ajustar a força 
    git clone https://github.com/walysonrodrigo/gameAps.git
    ```
 2. Abra o arquivo `index.html` no navegador para jogar.
+3. Link disponível para testes: https://game-aps.vercel.app/
