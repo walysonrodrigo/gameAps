@@ -464,7 +464,10 @@ function updatePenalty(player, isGoal) {
 function clearPenalties() {
     player1Penalties = [];
     player2Penalties = [];
-
+    updateScore(0, 1);
+    updateScore(0, 2);
+    player1Score = 0;
+    player2Score = 0;
     for (let i = 1; i <= 5; i++) {
         document.getElementById(`penaltyPlayer1_${i}`).style.backgroundColor = 'grey';
         document.getElementById(`penaltyPlayer2_${i}`).style.backgroundColor = 'grey';
@@ -483,12 +486,6 @@ function init() {
     animateGoalkeeper();
 }
 
-// Configurar evento de clique para o botão Iniciar
-// document.getElementById('startButton').addEventListener('click', function () {
-//     document.getElementById('menu').style.display = 'none';
-//     document.getElementById('gameScreen').style.display = 'flex';
-//     init(); // Inicializa o jogo
-// });
 
 
 // Configurar evento de clique para o chute

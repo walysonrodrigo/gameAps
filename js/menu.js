@@ -107,6 +107,7 @@ function showMenu() {
 
 function revanche() {
     clearPenalties();
+    
     document.getElementById('gameScreen').style.display = 'flex';
     document.getElementById('gameOverScreen').style.display = 'none';
     document.getElementById('instructionScreen').style.display = 'none';
