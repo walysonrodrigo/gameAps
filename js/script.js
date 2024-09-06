@@ -295,7 +295,6 @@ function animateDirection() {
 // Animação da bola até o gol
 function animateBall(targetX, targetY) {
     shooting = true;
-
     goalkeeperMoving = false; // Pausa o movimento do goleiro durante o chute
     goalieDefending = true;
 
@@ -316,7 +315,7 @@ function animateBall(targetX, targetY) {
             ballX = goalkeeperX; // Posicione a bola na posição x do goleiro
             ballY = goalkeeperY + goalkeeperHeight / 2; // Posicione a bola na altura do goleiro
             animateText("DEFENDEU!", 'blue', restartGame);
-            shooting = false;
+            // shooting = false;
             goalkeeperMoving = true; // Retoma o movimento do goleiro após o chute
             goalieDefending = false; // Reseta o estado de defesa
 
@@ -350,7 +349,7 @@ function animateBall(targetX, targetY) {
         if (ballCollidesWithGoalkeeper) {
             clearInterval(interval);
             animateText("DEFENDEU!", 'blue', restartGame);
-            shooting = false;
+            // shooting = false;
             goalkeeperMoving = true; // Retoma o movimento do goleiro após o chute
             goalieDefending = false; // Reseta o estado de defesa
 
@@ -363,7 +362,7 @@ function animateBall(targetX, targetY) {
 
         if (Math.abs(ballX - targetX) <= 5 && Math.abs(ballY - targetY) <= 5) {
             clearInterval(interval);
-            shooting = false;
+            // shooting = false;
             checkGoal();
             goalkeeperMoving = true; // Retoma o movimento do goleiro após o chute
             goalieDefending = false; // Reseta o estado de defesa
@@ -406,7 +405,7 @@ function restartGame() {
 // Simular o chute
 function shoot() {
     if (shooting) return; // Não permitir chute se já estiver atirando
-
+    
     // Parar as animações dos gráficos imediatamente ao chutar
     cancelAnimationFrame(intensityAnimationId);
     cancelAnimationFrame(directionAnimationId);
@@ -426,11 +425,12 @@ function shoot() {
 
     // // Iniciar o movimento do goleiro
     animateGoalkeeper();
+    shooting = false;
 }
 
 function updatePenalty(player, isGoal) {
     let penaltyElement;
-
+    
     if (player == 1) {
         penaltyElement = document.getElementById(`penaltyPlayer${player}_${player1Penalties.length + 1}`);
         player1Penalties.push(isGoal);
@@ -441,7 +441,7 @@ function updatePenalty(player, isGoal) {
 
     penaltyElement.style.backgroundColor = isGoal ? 'green' : 'red';
 
-    if (player1Penalties.length === 1 && player2Penalties.length === 0) {
+    if (player1Penalties.length === 5 && player2Penalties.length === 0) {
         setTimeout(() => {
             if (player1Score === player2Score) {
                 animateText("EMPATE!", 'yellow', restartGame);
@@ -458,6 +458,7 @@ function updatePenalty(player, isGoal) {
             }, 2000);
         }, 1000);
     }
+
 }
 
 function clearPenalties() {
@@ -491,7 +492,16 @@ function init() {
 
 
 // Configurar evento de clique para o chute
-document.getElementById('shootButton').addEventListener('click', shoot);
+document.getElementById('shootButton').addEventListener('click', startShoot);
 
-// Inicializar o jogo
+function startShoot() {
+    document.getElementById('shootButton').disabled = true;
+    
+    shoot();
+    
+    setTimeout(() => {
+        document.getElementById('shootButton').disabled = false;
+    }, 4500);
+}
+
 init();

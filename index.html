@@ -33,7 +33,7 @@
             <canvas id="intensityCanvas" width="300" height="50"></canvas>
             <span class="labelGrafic">Direção</span>
             <canvas id="directionCanvas" width="500" height="50"></canvas>
-            <button id="shootButton">
+            <button id="shootButton" class="shootButton">
                 <img src="images/shoot2.png" alt="Chutar">
                 <span id="shootText">CHUTAR</span>
             </button>
@@ -61,7 +61,7 @@
                 <p>Atenção: Caso a bola passe levemente fora da área delimitada pelo gol, o chute não será considerado válido, e o gol não será marcado.</p>
             </div>
         </div>
-        <button id="startButton" onclick="startGame()">Iniciar</button>
+        <button id="backToGame" class="shootButton" onclick="hiddenInstructionScreen()">Voltar</button>
     </div>
     <script src="js/menu.js"></script>
     <script src="js/vetor.js"></script>

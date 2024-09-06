@@ -109,13 +109,19 @@ function revanche() {
     clearPenalties();
     document.getElementById('gameScreen').style.display = 'flex';
     document.getElementById('gameOverScreen').style.display = 'none';
+    document.getElementById('instructionScreen').style.display = 'none';
+
 }
 
 function showInstructions() {
     document.getElementById('menu').style.display = 'none';
     document.getElementById('gameScreen').style.display = 'none';
-    document.getElementById('instructions').style.display = 'flex';
+    document.getElementById('instructionScreen').style.display = 'flex';
 }
 
+function hiddenInstructionScreen () {
+    document.getElementById('gameScreen').style.display = 'flex';
+    document.getElementById('instructionScreen').style.display = 'none';
+} 
 loadFans();
 loadCountryOptions(); // Carrega as opções de países quando a página é carregada

@@ -186,7 +186,7 @@ body {
     border-radius: 12px;
 }
 
-#shootButton {
+.shootButton {
     height: 60px;
     display: flex;
     align-items: center;
@@ -202,7 +202,7 @@ body {
     padding: 10px 20px; /* Adiciona espaçamento interno para melhor aparência */
 }
 
-#shootButton:hover {
+.shootButton:hover {
     background-color: #e64a19;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
