@@ -17,7 +17,6 @@
             <!-- Bandeiras dos países para seleção -->
         </div>
     </div>
-
     <div id="gameScreen" class="container">
         <div id="matches" class="container">
             <div id="matches-list"></div>
@@ -25,7 +24,9 @@
         <div id="gameArea">
             <div id="torcida"></div>
             <canvas id="gameCanvas" width="800" height="400"></canvas>
+            <span class="labelGrafic">Intensidade</span>
             <canvas id="intensityCanvas" width="300" height="50"></canvas>
+            <span class="labelGrafic">Direção</span>
             <canvas id="directionCanvas" width="500" height="50"></canvas>
             <button id="shootButton">
                 <img src="images/shoot2.png" alt="Chutar">
@@ -34,6 +35,29 @@
         </div>
     </div>
 
+    <div id="gameOverScreen" class="container">
+        <img src="images/cklogo2.png" style="width: 400px;">
+        <button id="restartButton" class="gameOverButton" onclick="revanche()">Revanche</button>
+        <button id="menuButton" class="gameOverButton" onclick="showMenu()">Menu</button>
+    </div>
+    
+    <div id="instructionScreen" class="container">
+        <img src="images/cklogo2.png" style="width: 400px;">
+        <div>
+            <h2>Instruções</h2>
+            <div class="instructions">
+                <p>Intensidade: A barra de intensidade (vermelha) se movimenta automaticamente da esquerda para a direita e vice-versa.</p>
+                <p>Direção: A barra de direção (azul) também se movimenta automaticamente da esquerda para a direita.</p>
+                <p>Como as barras de intensidade e direção se movem automaticamente, o segredo é clicar no momento exato para acertar o chute perfeito.</p>
+                <p>Depois de ajustar intensidade, direção e sincronizá-los, clique no botão laranja "CHUTAR" para executar o chute.</p>
+                <p>Preste atenção nos movimentos do goleiro para tentar enganá-lo com variações de força e direção.</p>
+                <p>O jogador realiza uma cobrança por vez. Após sua tentativa, é a vez do adversário.</p>
+                <p>Quem marcar mais gols nas 5 tentativas vence.</p>
+                <p>Atenção: Caso a bola passe levemente fora da área delimitada pelo gol, o chute não será considerado válido, e o gol não será marcado.</p>
+            </div>
+        </div>
+        <button id="startButton" onclick="startGame()">Iniciar</button>
+    </div>
     <script src="js/menu.js"></script>
     <script src="js/vetor.js"></script>
     <script src="js/script.js"></script>

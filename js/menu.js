@@ -101,7 +101,14 @@ function generateMatches(selectedCountryName) {
     // matchesList.insertBefore("title", matchesList.firstChild);
 }
 
+function showMenu() {
+    location.reload();
+}
 
-
+function revanche() {
+    clearPenalties();
+    document.getElementById('gameScreen').style.display = 'flex';
+    document.getElementById('gameOverScreen').style.display = 'none';
+}
 loadFans();
 loadCountryOptions(); // Carrega as opções de países quando a página é carregada

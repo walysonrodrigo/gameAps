@@ -441,7 +441,7 @@ function updatePenalty(player, isGoal) {
 
     penaltyElement.style.backgroundColor = isGoal ? 'green' : 'red';
 
-    if (player1Penalties.length === 5 && player2Penalties.length === 5) {
+    if (player1Penalties.length === 1 && player2Penalties.length === 0) {
         setTimeout(() => {
             if (player1Score === player2Score) {
                 animateText("EMPATE!", 'yellow', restartGame);
@@ -452,12 +452,23 @@ function updatePenalty(player, isGoal) {
 
             // recaregar a página
             setTimeout(() => {
-                location.reload();
+                // chamar paginar de game over
+                document.getElementById('gameScreen').style.display = 'none';
+                document.getElementById('gameOverScreen').style.display = 'flex';
             }, 2000);
         }, 1000);
     }
 }
 
+function clearPenalties() {
+    player1Penalties = [];
+    player2Penalties = [];
+
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById(`penaltyPlayer1_${i}`).style.backgroundColor = 'grey';
+        document.getElementById(`penaltyPlayer2_${i}`).style.backgroundColor = 'grey';
+    }
+}
 
 // Inicializar o jogo
 function init() {
